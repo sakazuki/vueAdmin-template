@@ -11,6 +11,7 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import router from './router'
 import store from './store'
+import cognito from './utils/cognito'
 
 import '@/icons' // icon
 import '@/permission' // permission control
@@ -23,5 +24,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  cognito,
   render: h => h(App)
 })
