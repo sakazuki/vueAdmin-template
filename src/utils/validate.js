@@ -3,7 +3,7 @@
  */
 
 export function isvalidUsername(str) {
-  return str.indexOf("@") >= 0
+  return str.indexOf('@') >= 0
 }
 
 /* valid uri */

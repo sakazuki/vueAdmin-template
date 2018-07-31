@@ -1,38 +1,31 @@
 <template>
   <div class="login-container">
-    <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
-      <h3 class="title">vue-element-admin</h3>
+    <el-form class="login-form" autoComplete="on" :model="signupForm" :rules="signupRules" ref="signupForm" label-position="left">
+      <h3 class="title">User Signup</h3>
       <el-form-item prop="username">
-        <span class="svg-container svg-container_login">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="username" />
+        <el-input name="username" type="text" v-model="signupForm.username" autoComplete="on" placeholder="username" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password"></svg-icon>
         </span>
-        <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on"
+        <el-input name="password" :type="pwdType" @keyup.enter.native="handleSignup" v-model="signupForm.password" autoComplete="on"
           placeholder="password"></el-input>
           <span class="show-pwd" @click="showPwd"><svg-icon icon-class="eye" /></span>
       </el-form-item>
+      <el-form-item prop="passwordConfirm">
+        <span class="svg-container">
+          <svg-icon icon-class="password"></svg-icon>
+        </span>
+        <el-input name="passwordConfirm" :type="pwdType" @keyup.enter.native="handleSignup" v-model="signupForm.passwordConfirm" autoComplete="on"
+          placeholder="passwordConfirm"></el-input>
+          <span class="show-pwd" @click="showPwd"><svg-icon icon-class="eye" /></span>
+      </el-form-item>
       <el-form-item>
-        <el-button type="primary" style="width:100%;" :loading="loading" @click.native.prevent="handleLogin">
-          Sign in
+        <el-button type="primary" style="width:100%;" :loading="loading" @click.native.prevent="handleSignup">
+          Signup
         </el-button>
       </el-form-item>
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: admin</span>
-      </div>
-      <div class="signup">
-        <router-link to="/signup" tag="button">Signup</router-link>
-        <router-link to="/confirm" tag="button">Confirm</router-link>
-        <router-link to="/changepassword" tag="button">Change Passowrd At First</router-link>
-        <router-link to="/passwordreset" tag="button">Reset Password</router-link>
-        <router-link to="/sendkey" tag="button">Resend Confirm Key</router-link>
-        <router-link to="/forgotpassword" tag="button">Forgot Password</router-link>
-      </div>
     </el-form>
   </div>
 </template>
@@ -41,7 +34,7 @@
 import { isvalidUsername } from '@/utils/validate'
 
 export default {
-  name: 'login',
+  name: 'Signup',
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!isvalidUsername(value)) {
@@ -58,13 +51,15 @@ export default {
       }
     }
     return {
-      loginForm: {
+      signupForm: {
         username: '',
-        password: ''
+        password: '',
+        passwordConfirm: ''
       },
-      loginRules: {
+      signupRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }]
+        password: [{ required: true, trigger: 'blur', validator: validatePass }],
+        passwordConfirm: [{ required: true, trigger: 'blur', validator: validatePass }]
       },
       loading: false,
       pwdType: 'password'
@@ -78,29 +73,20 @@ export default {
         this.pwdType = 'password'
       }
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('Login', this.loginForm).then(() => {
-            this.loading = false
-            this.$router.push({ path: '/' })
-          }).catch((error) => {
-            this.loading = false
-            console.log(error)
-            if (error === 'NEW_PASSWORD_REQUIRED') {
-              this.$router.push({ path: '/changepassword'})
-            }
+    handleSignup() {
+      if (this.signupForm.username && (this.signupForm.password === this.signupForm.passwordConfirm)) {
+        this.$cognito.signUp(this.signupForm.username, this.signupForm.password)
+          .then(result => {
+            this.$router.replace('/confirm')
+          }).catch(err => {
+            console.log(err)
           })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+      }
     }
   }
 }
 </script>
+
 
 <style rel="stylesheet/scss" lang="scss">
 $bg:#2d3a4b;

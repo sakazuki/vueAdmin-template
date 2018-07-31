@@ -48,6 +48,7 @@ export default class Cognito {
     const attributeList = []
     attributeList.push(new CognitoUserAttribute(dataEmail))
     return new Promise((resolve, reject) => {
+      console.log(this.userPool)
       this.userPool.signUp(username, password, attributeList, null, (err, result) => {
         if (err) {
           reject(err)
@@ -95,10 +96,94 @@ export default class Cognito {
         newPasswordRequired(userAttributes, requiredAttributes) {
           console.log('newPasswordRequired()')
           console.log(userAttributes, requiredAttributes)
-          cognitoUser.completeNewPasswordChallenge(password, {}, authConfig)
+          reject("NEW_PASSWORD_REQUIRED")
+          // cognitoUser.completeNewPasswordChallenge(password, {}, authConfig)
         }
       }
       cognitoUser.authenticateUser(authenticationDetails, authConfig)
+    })
+  }
+
+  /**
+   * FORCE_CHANGE_PASSWORD
+   */
+  forceChangePassword (username, password, newpassword) {
+    const userData = { Username: username, Pool: this.userPool }
+    const cognitoUser = new CognitoUser(userData)
+    const authenticationData = { Username: username, Password: password }
+    const authenticationDetails = new AuthenticationDetails(authenticationData)
+    console.log(authenticationDetails)
+    return new Promise((resolve, reject) => {
+      cognitoUser.authenticateUser(authenticationDetails, {
+        newPasswordRequired: function (userAttributes, requiredAttributes) {
+          cognitoUser.completeNewPasswordChallenge(newpassword, null, {
+            onFailure: function (err) {
+              reject(err)
+            },
+            onSuccess: function (result) {
+              resolve(result)
+            }
+          })
+        }
+      })
+    })
+  }
+
+  /**
+   * Password Reset
+   */
+  confirmPassword (username, password, confirmationCode) {
+    const userData = { Username: username, Pool: this.userPool }
+    const cognitoUser = new CognitoUser(userData)
+    const authenticationData = { Username: username, Password: password }
+    const authenticationDetails = new AuthenticationDetails(authenticationData)
+    console.log(authenticationDetails)
+    return new Promise((resolve, reject) => {
+      cognitoUser.confirmPassword(confirmationCode, password, {
+        onFailure (err) {
+          console.log(err)
+        },
+        onSuccess () {
+          console.log('Success')
+          resolve()
+        }
+      })
+    })
+  }
+
+  /*
+   * Resend Confirmation Code
+   */
+  sendKey (username) {
+    const userData = { Username: username, Pool: this.userPool }
+    const cognitoUser = new CognitoUser(userData)
+    return new Promise((resolve, reject) => {
+      cognitoUser.resendConfirmationCode(function (err, result) {
+        if (err) {
+          console.log(err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  }
+
+  /*
+   * Forgot Password
+   */
+  forgotPassword (username) {
+    const userData = { Username: username, Pool: this.userPool }
+    const cognitoUser = new CognitoUser(userData)
+    return new Promise((resolve, reject) => {
+      cognitoUser.forgotPassword({
+        onSuccess: function (result) {
+          console.log('call result: ' + result)
+          resolve(result)
+        },
+        onFailure: function (err) {
+          console.log(err)
+        }
+      })
     })
   }
 

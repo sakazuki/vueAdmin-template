@@ -36,7 +36,36 @@ export const constantRouterMap = [
       component: () => import('@/views/dashboard/index')
     }]
   },
-
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: () => import('@/views/login/Signup')
+  },
+  {
+    path: '/confirm',
+    name: 'Confirm',
+    component: () => import('@/views/login/Confirm')
+  },
+  {
+    path: '/changepassword',
+    name: 'ChangePassword',
+    component: () => import('@/views/login/ForceChangePassword')
+  },
+  {
+    path: '/passwordreset',
+    name: 'PasswordReset',
+    component: () => import('@/views/login/PasswordReset')
+  },
+  {
+    path: '/sendkey',
+    name: 'SendKey',
+    component: () => import('@/views/login/SendKey')
+  },
+  {
+    path: '/forgotpassword',
+    name: 'ForgotPassword',
+    component: () => import('@/views/login/ForgotPassword')
+  },
   {
     path: '/example',
     component: Layout,

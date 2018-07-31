@@ -5,7 +5,7 @@ import 'nprogress/nprogress.css'// Progress bar style
 import { Message } from 'element-ui'
 import { getToken } from '@/utils/auth' // Auth
 
-const whiteList = ['/login'] // Do not redirect whitelist
+const whiteList = ['/login', '/signup', '/confirm', '/changepassword', '/passwordreset', '/sendkey', '/forgotpassword'] // Do not redirect whitelist
 router.beforeEach((to, from, next) => {
   NProgress.start()
   const token = getToken()
